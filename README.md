@@ -30,9 +30,9 @@ To run the Expense Tracker App locally, follow these steps:
 
 
 git clone https://github.com/yourusername/expense-tracker-app.git
-cd expense-tracker-app
-cd frontend
-npm install
+-`cd expense-tracker-app`
+-`cd frontend`
+-`npm install`
 
 ## Usage
 

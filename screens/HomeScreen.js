@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Button, StyleSheet, TouchableOpacity, FlatList ,Alert} from 'react-native';
 import axios from 'axios';
-import Swipeout from 'react-native-swipeout'; // Import Swipeout
+import Swipeout from 'react-native-swipeout'; 
 import TotalExpensesCard from '../components/TotalExpensesCard';
 
 const HomeScreen = ({ navigation }) => {
@@ -9,7 +9,7 @@ const HomeScreen = ({ navigation }) => {
   const [weeklyExpenses, setWeeklyExpenses] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Function to navigate to AddExpenseScreen
+ 
   const handleAddExpense = () => {
     navigation.navigate('AddExpense');
   };
@@ -32,20 +32,20 @@ const HomeScreen = ({ navigation }) => {
   };
 
   const handleRefresh = () => {
-    setIsLoading(true); // Set loading state to true
-    fetchExpenses(); // Call fetchExpenses function to reload data
+    setIsLoading(true); 
+    fetchExpenses();
   };
 
-  // Function to format date and time
+  
   const formatDateTime = dateTime => {
     return new Date(dateTime).toLocaleString();
   };
 
   useEffect(() => {
-    fetchExpenses(); // Initial data fetch on component mount
+    fetchExpenses(); 
   }, []);
 
-  // Function to fetch expenses
+ 
   const fetchExpenses = async () => {
     try {
       const today = new Date();
@@ -53,13 +53,12 @@ const HomeScreen = ({ navigation }) => {
       const response = await axios.get('https://expense-tracker-react-native.onrender.com/expenses/get-expenses');
       const allExpenses = response.data;
 
-      // Calculate total expenses till date
+ 
       const total = allExpenses.reduce((acc, expense) => {
         return expense.type === 'Credit' ? acc + expense.amount : acc - expense.amount;
       }, 0);
       setTotalExpenses(total);
 
-      // Filter expenses of the past week
       const weekly = allExpenses.filter(expense => {
         const expenseDate = new Date(expense.date);
         return expenseDate >= lastWeek && expenseDate <= today;
@@ -68,7 +67,7 @@ const HomeScreen = ({ navigation }) => {
       setIsLoading(false);
     } catch (error) {
       console.error('Error fetching expenses:', error);
-      setIsLoading(false); // Set loading state to false in case of error
+      setIsLoading(false); 
     }
   };
 
@@ -80,7 +79,7 @@ const HomeScreen = ({ navigation }) => {
     );
   }
 
-  // Render each item in FlatList
+
   const renderExpenseItem = ({ item }) => {
     const swipeoutRightButtons = [
       

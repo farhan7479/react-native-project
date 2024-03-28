@@ -11,8 +11,10 @@ const ExpenseDetailScreen = ({ route }) => {
     day: 'numeric'
   });
 
+  
 
-  const textColor = type === 'Credit' ? '#2ecc71' : '#e74c3c'; 
+  const textColor = type === 'Credit' ? colors.textCredit : colors.textDebit;
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Title: {title}</Text>
@@ -24,11 +26,17 @@ const ExpenseDetailScreen = ({ route }) => {
   );
 };
 
+const colors = {
+  textCredit: '#2ecc71',
+  textDebit: '#e74c3c',
+  white: '#fff'
+};
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#fff',
+    backgroundColor: colors.white,
   },
   title: {
     fontSize: 20,

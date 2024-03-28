@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, Button, StyleSheet,  TextInput } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
+import { View, Text, Button, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 import axios from 'axios';
 
 const AddExpenseScreen = ({ navigation }) => {
@@ -27,13 +26,14 @@ const AddExpenseScreen = ({ navigation }) => {
 
   const handleAddExpense = async () => {
     try {
-      const response = await axios.post('https://expense-tracker-react-native.onrender.com/expenses/add-expense', {
+      const response = await axios.post(`${process.env.API_URL}/expenses/add-expense`, {
         title,
         amount: parseFloat(amount),
         type,
         label,
         expenseId
       });
+  
 
       console.log('Expense added:', response.data);
 
@@ -45,7 +45,7 @@ const AddExpenseScreen = ({ navigation }) => {
 
       setTimeout(() => {
         navigation.navigate('ExpenseList');
-      }, 1000);
+      }, 1);
     } catch (error) {
       console.error('Error adding expense:', error);
       setMessage('Failed to add expense. Please try again.');
@@ -71,13 +71,20 @@ const AddExpenseScreen = ({ navigation }) => {
         keyboardType="numeric"
       />
       <Text style={styles.label}>Type:</Text>
-      <Picker
-        selectedValue={type}
-        onValueChange={(itemValue, itemIndex) => setType(itemValue)}
-      >
-        <Picker.Item label="Debited" value="Debit" />
-        <Picker.Item label="Credited" value="Credit" />
-      </Picker>
+      <View style={styles.dropdown}>
+        <TouchableOpacity
+          style={[styles.dropdownOption, type === 'Debit' && styles.selectedOption]}
+          onPress={() => setType('Debit')}
+        >
+          <Text style={styles.dropdownText}>Debit</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.dropdownOption, type === 'Credit' && styles.selectedOption]}
+          onPress={() => setType('Credit')}
+        >
+          <Text style={styles.dropdownText}>Credit</Text>
+        </TouchableOpacity>
+      </View>
       <Text style={styles.label}>Label/Category:</Text>
       <TextInput
         style={styles.input}
@@ -90,11 +97,18 @@ const AddExpenseScreen = ({ navigation }) => {
   );
 };
 
+const colors = {
+  white: '#fff',
+  green: 'green',
+  blue: 'blue',
+  gray: '#ccc'
+};
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#fff',
+    backgroundColor: colors.white,
   },
   label: {
     fontSize: 16,
@@ -102,15 +116,32 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: colors.gray,
     borderRadius: 5,
     padding: 10,
     marginBottom: 10,
   },
   message: {
     marginBottom: 10,
-    color: 'green',
+    color: colors.green,
     fontWeight: 'bold',
+  },
+  dropdown: {
+    flexDirection: 'row',
+    marginBottom: 10,
+  },
+  dropdownOption: {
+    borderWidth: 1,
+    borderColor: colors.gray,
+    borderRadius: 5,
+    padding: 10,
+    marginRight: 10,
+  },
+  dropdownText: {
+    fontSize: 16,
+  },
+  selectedOption: {
+    borderColor: colors.blue, 
   },
 });
 

@@ -11,7 +11,7 @@ const EditExpenseScreen = ({ route, navigation }) => {
 
   const handleUpdateExpense = async () => {
     try {
-      await axios.put(`https://expense-tracker-react-native.onrender.com/expenses/update`, { title, amount, type, label, expenseId: expense.expenseId });
+      await axios.put(`${process.env.API_URL}/expenses/update`, { title, amount, type, label, expenseId: expense.expenseId });
       Alert.alert('Success', 'Expense updated successfully');
       navigation.goBack();
     } catch (error) {
@@ -56,11 +56,16 @@ const EditExpenseScreen = ({ route, navigation }) => {
   );
 };
 
+const colors = {
+  white: '#fff',
+  gray: '#ccc'
+};
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#fff',
+    backgroundColor: colors.white,
   },
   label: {
     fontSize: 16,
@@ -68,7 +73,7 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: colors.gray,
     borderRadius: 5,
     padding: 10,
     marginBottom: 10,

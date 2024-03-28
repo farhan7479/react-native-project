@@ -9,7 +9,7 @@ const ExpenseListScreen = ({ navigation }) => {
 
   const handleDeleteExpense = async (expense) => {
     try {
-      await axios.delete(`https://expense-tracker-react-native.onrender.com/expenses/delete/${expense.expenseId}`);
+      await axios.delete(`${process.env.API_URL}/delete/${expense.expenseId}`);
       Alert.alert('Success', 'Expense deleted successfully');
       fetchExpenses();
     } catch (error) {
@@ -23,7 +23,7 @@ const ExpenseListScreen = ({ navigation }) => {
   };
 
   const fetchExpenses = async () => {
-    let url = 'https://expense-tracker-react-native.onrender.com/expenses';
+    let url = `${process.env.API_URL}/expenses`;
     if (filter === 'day' || filter === 'week' || filter === 'month') {
       url += `/filter?filter=${filter}`;
     }
@@ -61,20 +61,20 @@ const ExpenseListScreen = ({ navigation }) => {
       },
     ];
 
+    const expenseDateTime = new Date(item.date);
+    const formattedDateTime = `${expenseDateTime.toLocaleDateString()} ${expenseDateTime.toLocaleTimeString()}`;
+
     return (
-      <Swipeout left={swipeoutLeftButtons} right={swipeoutRightButtons} autoClose={true} backgroundColor="transparent">
+      <Swipeout right={swipeoutRightButtons} left={swipeoutLeftButtons} autoClose={true} backgroundColor="transparent">
         <TouchableOpacity
           style={styles.expenseItem}
           onPress={() => handleExpenseDetails(item)}
         >
-          <Text style={styles.title}>{item.title}</Text>
-          <Text style={styles.label}>{item.label}</Text>
-          <View style={styles.amountContainer}>
-            <Text style={item.type === 'Credit' ? styles.creditedAmount : styles.debitedAmount}>
-              ₹{item.amount}
-            </Text>
-          </View>
-          <Text style={styles.type}>{item.type}</Text>
+          <Text style={styles.expenseTitle}>{item.title}</Text>
+          <Text style={styles.expenseDate}>Date: {formattedDateTime}</Text>
+          <Text style={[styles.expenseAmount, item.type === 'Debit' ? styles.debitedAmount : styles.creditedAmount]}>
+            Amount: ₹{item.amount}
+          </Text>
         </TouchableOpacity>
       </Swipeout>
     );
@@ -112,16 +112,44 @@ const ExpenseListScreen = ({ navigation }) => {
   );
 };
 
+const colors = {
+  white: '#fff',
+  gray: '#ccc',
+  blue: 'blue',
+  red: 'red',
+  green: 'green'
+};
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#fff',
+    backgroundColor: colors.white,
+    alignItems: 'center', // Center items horizontally
   },
   sectionTitle: {
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 10,
+  },
+  expenseItem: {
+    width: '100%', // Take up full width
+    padding: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.gray,
+  },
+  expenseTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 5,
+  },
+  expenseDate: {
+    color: colors.gray,
+    marginBottom: 5,
+  },
+  expenseAmount: {
+    fontSize: 16,
+    marginBottom: 5,
   },
   filterContainer: {
     flexDirection: 'row',
@@ -132,54 +160,19 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 5,
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: colors.gray,
   },
   activeFilter: {
-    backgroundColor: '#ccc',
+    backgroundColor: colors.gray,
   },
   filterText: {
     fontWeight: 'bold',
   },
-  expenseItem: {
-    padding: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
-  },
-  rightAction: {
-    backgroundColor: 'blue',
-    justifyContent: 'center',
-    alignItems: 'flex-end',
-    flex: 1,
-  },
-  leftAction: {
-    backgroundColor: 'red',
-    justifyContent: 'center',
-    alignItems: 'flex-start',
-    flex: 1,
-  },
-  actionText: {
-    color: '#fff',
-    fontWeight: '600',
-    padding: 20,
-  },
   creditedAmount: {
-    color: 'green',
+    color: colors.green,
   },
   debitedAmount: {
-    color: 'red',
-  },
-  title: {
-    fontWeight: 'bold',
-  },
-  label: {
-    color: '#666',
-  },
-  amountContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  type: {
-    color: '#666',
+    color: colors.red,
   },
 });
 

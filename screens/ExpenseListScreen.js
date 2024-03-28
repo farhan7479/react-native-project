@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, StyleSheet, TouchableOpacity, Alert } from 'react-native';
-import Swipeout from 'react-native-swipeout';
+import { TouchableOpacity, Swipeable } from 'react-native-gesture-handler';
 import axios from 'axios';
 
 const ExpenseListScreen = ({ navigation }) => {
@@ -45,38 +45,48 @@ const ExpenseListScreen = ({ navigation }) => {
   };
 
   const renderExpenseItem = ({ item }) => {
-    const swipeoutLeftButtons = [
-      {
-        text: 'Delete',
-        onPress: () => handleDeleteExpense(item),
-        backgroundColor: 'red',
-      },
-    ];
+    const swipeRightActions = (progress, dragX) => {
+      const scale = dragX.interpolate({
+        inputRange: [-100, 0],
+        outputRange: [1, 0],
+        extrapolate: 'clamp',
+      });
+      return (
+        <TouchableOpacity style={styles.rightAction} onPress={() => handleEditExpense(item)}>
+          <Text style={[styles.actionText, { transform: [{ scale }] }]}>Edit</Text>
+        </TouchableOpacity>
+      );
+    };
 
-    const swipeoutRightButtons = [
-      {
-        text: 'Edit',
-        onPress: () => handleEditExpense(item),
-        backgroundColor: 'blue',
-      },
-    ];
-
-    const expenseDateTime = new Date(item.date);
-    const formattedDateTime = `${expenseDateTime.toLocaleDateString()} ${expenseDateTime.toLocaleTimeString()}`;
+    const swipeLeftActions = (progress, dragX) => {
+      const scale = dragX.interpolate({
+        inputRange: [0, 100],
+        outputRange: [0, 1],
+        extrapolate: 'clamp',
+      });
+      return (
+        <TouchableOpacity style={styles.leftAction} onPress={() => handleDeleteExpense(item)}>
+          <Text style={[styles.actionText, { transform: [{ scale }] }]}>Delete</Text>
+        </TouchableOpacity>
+      );
+    };
 
     return (
-      <Swipeout right={swipeoutRightButtons} left={swipeoutLeftButtons} autoClose={true} backgroundColor="transparent">
+      <Swipeable
+        renderRightActions={swipeRightActions}
+        renderLeftActions={swipeLeftActions}
+        overshootRight={false}
+        overshootLeft={false}
+      >
         <TouchableOpacity
           style={styles.expenseItem}
           onPress={() => handleExpenseDetails(item)}
         >
           <Text style={styles.expenseTitle}>{item.title}</Text>
-          <Text style={styles.expenseDate}>Date: {formattedDateTime}</Text>
-          <Text style={[styles.expenseAmount, item.type === 'Debit' ? styles.debitedAmount : styles.creditedAmount]}>
-            Amount: ₹{item.amount}
-          </Text>
+          <Text style={styles.expenseDate}>Date: {item.date}</Text>
+          <Text style={styles.expenseAmount}>Amount: ₹{item.amount}</Text>
         </TouchableOpacity>
-      </Swipeout>
+      </Swipeable>
     );
   };
 
@@ -173,6 +183,22 @@ const styles = StyleSheet.create({
   },
   debitedAmount: {
     color: colors.red,
+  },
+  rightAction: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'flex-end',
+    backgroundColor: colors.blue,
+  },
+  leftAction: {
+    flex: 1,
+    justifyContent: 'center',
+    backgroundColor: colors.red,
+  },
+  actionText: {
+    color: colors.white,
+    fontWeight: '600',
+    padding: 20,
   },
 });
 
